@@ -1,0 +1,6 @@
+{
+    "name": "becau-api",
+    "require": {
+        "php": "^8.0"
+    }
+}

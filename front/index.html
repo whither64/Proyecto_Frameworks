@@ -102,6 +102,86 @@
     <button type="submit">Entrar</button>
 </form>
 
+<script>
+// Detectar entorno
+const isGitHubPages = window.location.hostname.includes('github.io');
+const isLocal = window.location.hostname === 'localhost' || 
+                window.location.hostname.includes('192.168');  /// direccion a cambiar, debecoicidir con ip vm
+
+// Configuración
+const CONFIG = {
+    local: {
+        apiUrl: 'http://192.168.100.92/back', // debe coincidir con ip equipo
+        useFormSubmit: true
+    },
+    github: {
+        apiUrl: 'https://tu-app-heroku.herokuapp.com', // Cambiar por tu URL real
+        useFormSubmit: false
+    }
+};
+
+const config = isGitHubPages ? CONFIG.github : CONFIG.local;
+
+// Modificar el formulario dinámicamente
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    
+    if (!config.useFormSubmit) {
+        // Para GitHub Pages: usar JavaScript + API
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                usuario: document.getElementById('usuario').value,
+                idusuario: document.getElementById('idusuario').value,
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                const response = await fetch(config.apiUrl + '/index.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Guardar sesión en localStorage
+                    localStorage.setItem('usuario', JSON.stringify(result.usuario));
+                    localStorage.setItem('tipo', formData.usuario);
+                    // Redirigir
+                    window.location.href = result.redirect;
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión. Intenta más tarde.');
+            }
+        });
+        
+        // Cambiar action para evitar envío normal
+        form.action = "javascript:void(0);";
+    } else {
+        // Para local: dejar el formulario PHP normal
+        form.action = config.apiUrl + '/login.php';
+        form.method = 'POST';
+    }
+});
+
+// Función para verificar sesión en todas las páginas
+function verificarSesion() {
+    if (isGitHubPages) {
+        const usuario = localStorage.getItem('usuario');
+        if (!usuario && !window.location.pathname.includes('index.html')) {
+            window.location.href = 'index.html';
+        }
+    }
+}
+</script>
 
 </body>
 </html>

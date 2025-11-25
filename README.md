@@ -45,4 +45,22 @@
 ## url = https://dantvader.github.io/Proyecto_Frameworks
 
 
+## si por algun casual crean un nuevo html favor de procurar que este cuente con el siguiente script
+
+##        <script>
+##        // Verificar sesión al cargar la página
+##        document.addEventListener('DOMContentLoaded', function() {
+##            if (window.location.hostname.includes('github.io')) {
+##                const usuario = localStorage.getItem('usuario');
+##                if (!usuario) {
+##                    window.location.href = 'index.html';
+##                } else {
+##                    // Mostrar información del usuario si quieres
+##                    console.log('Usuario logueado:', JSON.parse(usuario));
+##                }
+##            }
+##        });
+##        </script>
+
+
 uses node modules: json,jsonwebtoken,express,nodemon,morgan,mysql,urlencoded
